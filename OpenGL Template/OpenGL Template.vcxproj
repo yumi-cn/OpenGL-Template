@@ -130,15 +130,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera\camera.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="glfw.cpp" />
     <ClCompile Include="gl_template.cpp" />
+    <ClCompile Include="Light\light.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera\camera.h" />
+    <ClInclude Include="cam.h" />
     <ClInclude Include="gl_template.h" />
+    <ClInclude Include="Light\light.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

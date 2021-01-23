@@ -27,7 +27,7 @@
     <ClCompile Include="gl_template.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Camera\camera.cpp">
+    <ClCompile Include="Light\light.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,7 +38,10 @@
     <ClInclude Include="gl_template.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="Camera\camera.h">
+    <ClInclude Include="Light\light.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cam.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

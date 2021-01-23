@@ -62,6 +62,73 @@ glm::vec3 positions[] = {
     glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
+glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
+
+float deltaTime = 0.0f; // 当前帧与上一帧的时间差
+float lastFrame = 0.0f; // 上一帧的时间
+
+float pitch = 0, yaw = -90;
+float lastX = 400, lastY = 300;
+
+bool firstMouse = true;
+
+float fov = 45.0f;
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    // 这个bool变量初始时是设定为true的
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    // 偏航角从-90度开始，鼠标向左移动，值变的更小
+    // 视角要朝左旋转的话，就要更小的偏航角值
+    // 所以直接加上 xpose - lastX即可
+    float xoffset = xpos - lastX;
+    // 而俯仰角是相反的，鼠标向上移动，值变的更小
+    // 视角要朝上旋转的话，就要更大的俯仰角
+    // 所以要反过来减两个坐标的差值
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.05f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 89.0f) {
+        pitch = 89.0f;
+    }
+    if (pitch < -89.0f) {
+        pitch = -89.0f;
+    }
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+    front.y = sin(glm::radians(pitch));
+    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+    cameraFront = glm::normalize(front);
+    // 其实还要重新计算Right和Up向量
+    cameraRight = glm::normalize(glm::cross(cameraFront, worldUp));
+    cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (fov >= 1.0f && fov <= 89.0f)
+        fov -= yoffset;
+    if (fov <= 1.0f)
+        fov = 1.0f;
+    if (fov >= 89.0f)
+        fov = 89.0f;
+}
 
 CameraData::CameraData() {
     init_buffers();
@@ -111,6 +178,11 @@ CameraRender::~CameraRender() {};
 
 void CameraRender::run(GLFWwindow* window) {
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
     // 告诉OpenGL渲染窗口的尺寸大小, 视口 Viewport
     // 窗口左下角的位置，宽度，高度
     glViewport(0, 0, width, height);
@@ -129,10 +201,10 @@ void CameraRender::run(GLFWwindow* window) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
         glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 100.0f);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -164,6 +236,10 @@ void CameraRender::run(GLFWwindow* window) {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, 0);
 
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         // glfwSwapBuffers函数会交换颜色缓冲
         // 它是一个储存着GLFW窗口每一个像素颜色值的大缓冲
         // 它在这一迭代中被用来绘制，并且将会作为输出显示在屏幕上。
@@ -180,7 +256,20 @@ void CameraRender::run(GLFWwindow* window) {
 // 使用GLFW的glfwGetKey函数，它需要一个窗口以及一个按键作为输入
 // 这个函数将会返回这个按键是否正在被按下
 void CameraRender::process_input(GLFWwindow *window) {
+    float cameraSpeed = 2.5f * deltaTime;
     // 检查用户是否按下了返回键(Esc)，如果没有按下，glfwGetKey将会返回GLFW_RELEASE
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        cameraPos += cameraSpeed * cameraFront;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        cameraPos -= cameraSpeed * cameraRight;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        cameraPos += cameraSpeed * cameraRight;
+    }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
