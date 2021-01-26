@@ -1,6 +1,7 @@
 //#include "CubeParty/program.h"
 //#include "Camera/camera.h"
-#include "Light/light.h"
+//#include "Light/light.h"
+#include "Lights/lights.h"
 
 extern GLFWwindow* init_glfw(int width, int height);
 
@@ -16,7 +17,8 @@ int main() {
 
     //CubePartyRender render(width, height);
     //CameraRender render(width, height);
-    LightRender render(width, height);
+    //LightRender render(width, height);
+    LightsRender render(width, height);
     render.run(window);
 
     glfwTerminate();

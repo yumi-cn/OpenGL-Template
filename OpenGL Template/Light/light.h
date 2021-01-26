@@ -6,11 +6,14 @@ class LightData : public Data {
 public:
     unsigned cube_VBO, cube_VAO;
     unsigned light_VBO, light_VAO;
+    unsigned diffuse_texture;
+    unsigned specular_texture;
     
     LightData();
     ~LightData();
 
     void init_buffers();
+    void init_textures();
 };
 
 class LightShader : public Shader {
