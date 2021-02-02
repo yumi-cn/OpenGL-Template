@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>H:\OpenGL libs\glfw-3.3.2-win32\include;H:\OpenGL libs\glad\include;H:\OpenGL libs\glm;$(IncludePath)</IncludePath>
-    <LibraryPath>H:\OpenGL libs\glfw-3.3.2-win32\lib-vc2017;$(LibraryPath)</LibraryPath>
+    <IncludePath>H:\OpenGL libs\glfw-3.3.2-win32\include;H:\OpenGL libs\glad\include;H:\OpenGL libs\glm;H:\OpenGL libs\assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>H:\OpenGL libs\glfw-3.3.2-win32\lib-vc2017;H:\OpenGL libs\assimp_lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,7 +84,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp-vc141-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>MSVCRT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -130,16 +130,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Assimp\assimp.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="glfw.cpp" />
     <ClCompile Include="gl_template.cpp" />
-    <ClCompile Include="Lights\lights.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assimp\assimp.h" />
     <ClInclude Include="cam.h" />
     <ClInclude Include="gl_template.h" />
-    <ClInclude Include="Lights\lights.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
